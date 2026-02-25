@@ -7,11 +7,13 @@ import json  # <--- Konieczne do zapisu configu modów
 import atexit
 from pathlib import Path
 
-import modules.help as help
-import modules.info as info
-import modules.Start as Start
-import modules.load_exit2 as load_exit2
-import modules.celebration as celebration
+# import modules.help as help
+# import modules.info as info
+# import modules.Start as Start
+# import modules.load_exit2 as load_exit2
+# import modules.celebration as celebration
+
+from modules import help, info, Start, load_exit2, celebration
 
 
 # first_file = Path("first")
