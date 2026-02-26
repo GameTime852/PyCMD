@@ -130,7 +130,7 @@ def main():
         remote_v = get_remote_version()
     
     console.print(f"Obecna wersja: [cyan]{local_v}[/cyan]")
-    console.print(f"Najnowsza dostępna wersja: [cyan]{remote_v}[/cyan]\n")
+    console.print(f"Najnowsza stabilna dostępna wersja: [cyan]{remote_v}[/cyan]\n")
     
     if remote_v == "0.0.0":
         console.print("[red]Nie udało się pobrać informacji o nowej wersji.[/red]")
