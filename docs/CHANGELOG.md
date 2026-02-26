@@ -29,3 +29,11 @@
 * Added temporary celebration screen
 * Plans for next ver: 
     * Add system for turning off mods 
+
+#### **Version 1.1.1:**
+
+* Done plans
+    * Added system for turning off mods
+    * Deleted celebration screen
+* Plans for v1.2:
+    * Add updater
