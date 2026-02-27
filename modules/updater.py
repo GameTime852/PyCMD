@@ -137,7 +137,7 @@ def main():
         input("\nNaciśnij Enter, aby wyjść...")
         return
 
-    if parse_version(remote_v) > parse_version(local_v):
+    if parse_version(remote_v) != parse_version(local_v):
         console.print("[bold green]Dostępna jest nowa aktualizacja![/bold green]")
         choice = console.input("Czy chcesz pobrać i zainstalować aktualizację teraz? (T/N): ").strip().lower()
         
