@@ -45,3 +45,5 @@
     * Fixed some bugs
     * Added system for updating from official repository
 * Added prefix for command prompt
+#### **Version 1.2.1:**
+* Fixed critical bug
