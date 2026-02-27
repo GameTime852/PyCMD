@@ -156,7 +156,7 @@ with open('config.txt', 'r', encoding='utf-8') as f:
     if not lines:
         lines = ["started = false\n"]
     started = lines[0]
-    version = lines[1]
+    ignore = lines[1]
     prefix_line = lines[2]
     prefix = prefix_line.split("prefix = ")[-1].strip()
 
@@ -244,8 +244,7 @@ while True:
         load_exit2.load_exit()
         try:
             with open('config.txt', 'w', encoding='utf-8') as f:
-                f.write("started = false\n")
-                if len(lines) > 1: f.writelines(lines[1:])
+                f.writelines(["started = false\n"] + lines[1:])
         except: pass
         exit()
 
