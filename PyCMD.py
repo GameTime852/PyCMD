@@ -156,11 +156,14 @@ with open('config.txt', 'r', encoding='utf-8') as f:
     if not lines:
         lines = ["started = false\n"]
     started = lines[0]
+    version = lines[1]
+    prefix_line = lines[2]
+    prefix = prefix_line.split("prefix = ")[-1].strip()
 
 if not started == "started = true\n":
     Start.start()
     with open('config.txt', 'w', encoding='utf-8') as f:
-        f.write("started = true\n")
+        f.writelines(["started = true\n"] + lines[1:])
         if len(lines) > 1: f.writelines(lines[1:])
 
 
@@ -170,7 +173,7 @@ while True:
     print("\n")
     current_directory = os.getcwd()
     try:
-        command = input(current_directory + "> ")
+        command = input(prefix + " " + current_directory + "> ")
     except EOFError:
         break
         
