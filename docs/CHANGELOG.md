@@ -32,8 +32,16 @@
 
 #### **Version 1.1.1:**
 
-* Done plans
+* Done plans:
+    * Fixed some bugs
     * Added system for turning off mods
     * Deleted celebration screen
 * Plans for v1.2:
     * Add updater
+
+#### **Version 1.2:**
+
+* Done plans:
+    * Fixed some bugs
+    * Added system for updating from official repository
+* Added prefix for command prompt
