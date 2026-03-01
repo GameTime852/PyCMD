@@ -45,5 +45,12 @@
     * Fixed some bugs
     * Added system for updating from official repository
 * Added prefix for command prompt
+
 #### **Version 1.2.1:**
+
 * Fixed critical bug
+
+#### **Version 1.3:**
+
+* Added command for downloading mods
+* Updated help screen

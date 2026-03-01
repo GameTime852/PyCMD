@@ -13,7 +13,7 @@ from pathlib import Path
 # import modules.load_exit2 as load_exit2
 # import modules.celebration as celebration
 
-from modules import help, info, Start, load_exit2, celebration, updater
+from modules import getmods, help, info, Start, load_exit2, celebration, updater 
 
 
 # first_file = Path("first")
@@ -291,7 +291,8 @@ while True:
         os.system("notepad config.txt")
     elif command.strip() == "update":
         updater.main()
-        
+    elif command.strip() == "getmods":
+        getmods.main()
     else:
         if command.strip():
             print(f"Nieznane polecenie: {command}")

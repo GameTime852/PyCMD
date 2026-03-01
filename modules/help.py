@@ -10,3 +10,5 @@ def help(page=1):
         print("  ls    - Wyświetla zawartość katalogu")
         print("  exit  - Zamyka PyCMD")
         print("  pwd   - Wyświetla bieżący katalog")
+        print("  update - Sprawdza aktualizacje PyCMD")
+        print("  getmods - Otwiera ekran pobierania modów")
