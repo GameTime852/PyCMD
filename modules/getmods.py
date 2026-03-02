@@ -26,13 +26,11 @@ MODS_DIR = os.path.join(ROOT_DIR, "mods")               # Docelowy folder na mod
 
 def search_github_for_mods(query: str) -> list:
     """Przeszukuje GitHub API w poszukiwaniu modów do PyCMD."""
-    # Dodajemy słowo 'pycmd', aby upewnić się, że szukamy modów do Twojego programu
-    # Można też szukać po tagach, np. 'topic:pycmd-mod'
     search_query = urllib.parse.quote(f"{query} pycmd")
     url = f"https://api.github.com/search/repositories?q={search_query}&sort=stars&order=desc&per_page=10"
     
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'PyCMD-ModManager/1.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'PyCMD-ModManager/1.1'})
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode('utf-8'))
             return data.get('items', [])
@@ -56,7 +54,6 @@ def display_mods(mods: list):
     table.add_column("Gwiazdki ⭐", justify="right", style="yellow")
 
     for idx, mod in enumerate(mods):
-        # Skracanie opisu, jeśli jest za długi
         desc = mod.get('description') or "Brak opisu"
         if len(desc) > 60:
             desc = desc[:57] + "..."
@@ -71,8 +68,9 @@ def display_mods(mods: list):
     console.print(table)
 
 def download_and_install_mod(mod_data: dict):
-    """Pobiera i instaluje wybranego moda."""
+    """Pobiera i instaluje wybranego moda, uwzględniając mody folderowe."""
     repo_full_name = mod_data['full_name']
+    repo_name = mod_data['name']
     default_branch = mod_data.get('default_branch', 'main')
     zip_url = f"https://github.com/{repo_full_name}/archive/refs/heads/{default_branch}.zip"
     
@@ -85,7 +83,6 @@ def download_and_install_mod(mod_data: dict):
         transient=True,
     ) as progress:
         
-        # Pobieranie
         task1 = progress.add_task(f"[cyan]Pobieranie {repo_full_name}...", total=None)
         try:
             req = urllib.request.Request(zip_url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -96,7 +93,6 @@ def download_and_install_mod(mod_data: dict):
             console.print(f"[red]Błąd pobierania moda: {e}[/red]")
             return
 
-        # Instalacja
         task2 = progress.add_task("[yellow]Instalowanie moda...", total=None)
         try:
             with tempfile.TemporaryDirectory() as temp_dir:
@@ -107,14 +103,14 @@ def download_and_install_mod(mod_data: dict):
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                     zip_ref.extractall(temp_dir)
                 
-                # Odnajdywanie wypakowanego folderu głównego (np. nazwa_repo-main)
                 extracted_folders = [f for f in os.listdir(temp_dir) if os.path.isdir(os.path.join(temp_dir, f))]
                 if not extracted_folders:
                     raise Exception("Archiwum ZIP jest puste.")
                 
                 mod_root = os.path.join(temp_dir, extracted_folders[0])
+                installed_items = 0
                 
-                installed_files = 0
+                # --- LOGIKA WYKRYWANIA STRUKTURY MODA ---
                 
                 # Sposób 1: Mod posiada własny folder 'mods' lub 'modules'
                 mod_specific_dir = None
@@ -125,22 +121,48 @@ def download_and_install_mod(mod_data: dict):
                 
                 if mod_specific_dir and os.path.isdir(mod_specific_dir):
                     for item in os.listdir(mod_specific_dir):
-                        if item.endswith(".py"):
-                            shutil.copy2(os.path.join(mod_specific_dir, item), os.path.join(MODS_DIR, item))
-                            installed_files += 1
+                        item_path = os.path.join(mod_specific_dir, item)
+                        dest_path = os.path.join(MODS_DIR, item)
+                        
+                        # Kopiuj foldery, jeśli mają main.py
+                        if os.path.isdir(item_path) and os.path.exists(os.path.join(item_path, "main.py")):
+                            if os.path.exists(dest_path): shutil.rmtree(dest_path) # Nadpisz jeśli istnieje
+                            shutil.copytree(item_path, dest_path)
+                            installed_items += 1
+                        # Kopiuj luźne pliki .py
+                        elif item.endswith(".py"):
+                            shutil.copy2(item_path, dest_path)
+                            installed_items += 1
                 else:
-                    # Sposób 2: Kopiujemy wszystkie pliki .py z głównego folderu repozytorium
-                    for item in os.listdir(mod_root):
-                        if item.endswith(".py") and item.lower() != "setup.py":
-                            shutil.copy2(os.path.join(mod_root, item), os.path.join(MODS_DIR, item))
-                            installed_files += 1
+                    # Sposób 2: Całe pobrane repozytorium to jeden wielki "mod folderowy" (zawiera main.py na wierzchu)
+                    if os.path.exists(os.path.join(mod_root, "main.py")):
+                        dest_path = os.path.join(MODS_DIR, repo_name)
+                        if os.path.exists(dest_path): shutil.rmtree(dest_path)
+                        shutil.copytree(mod_root, dest_path)
+                        installed_items += 1
+                    else:
+                        # Sposób 3: W głównym folderze są inne foldery, które mają w sobie 'main.py'
+                        for item in os.listdir(mod_root):
+                            item_path = os.path.join(mod_root, item)
+                            dest_path = os.path.join(MODS_DIR, item)
+                            if os.path.isdir(item_path) and os.path.exists(os.path.join(item_path, "main.py")):
+                                if os.path.exists(dest_path): shutil.rmtree(dest_path)
+                                shutil.copytree(item_path, dest_path)
+                                installed_items += 1
+                        
+                        # Sposób 4: Jeśli wciąż nie znaleziono żadnych modów folderowych, bierzemy luźne pliki .py
+                        if installed_items == 0:
+                            for item in os.listdir(mod_root):
+                                if item.endswith(".py") and item.lower() != "setup.py":
+                                    shutil.copy2(os.path.join(mod_root, item), os.path.join(MODS_DIR, item))
+                                    installed_items += 1
                 
                 progress.update(task2, completed=True)
                 
-                if installed_files > 0:
-                    console.print(f"[bold green]✅ Pomyślnie zainstalowano {installed_files} plików z {repo_full_name} do folderu 'mods'![/bold green]")
+                if installed_items > 0:
+                    console.print(f"[bold green]✅ Pomyślnie zainstalowano {installed_items} modyfikacji z {repo_full_name} do folderu 'mods'![/bold green]")
                 else:
-                    console.print(f"[bold yellow]⚠️ Pobrane repozytorium {repo_full_name} nie zawierało żadnych plików .py w głównym folderze ani w folderach 'mods'/'modules'.[/bold yellow]")
+                    console.print(f"[bold yellow]⚠️ Pobrane repozytorium {repo_full_name} nie zawiera obsługiwanego formatu modów (brak main.py w folderach lub plików .py).[/bold yellow]")
 
         except Exception as e:
             console.print(f"[bold red]Błąd podczas instalacji moda: {e}[/bold red]")
@@ -158,11 +180,11 @@ def main():
         if not query:
             continue
             
-        with console.status("Przeszukiwanie GitHuba...", spinner="dots"):
+        with console.status("Przeszukiwanie GitHuba...", spinner="bouncingBall", spinner_style="cyan"):
             mods = search_github_for_mods(query)
             
         if not mods:
-            console.print("[yellow]Nie znaleziono żadnych modów spełniających Twoje kryteria. Spróbuj innych słów.[/yellow]\n")
+            console.print("[bright_red]Nie znaleziono żadnych modów spełniających Twoje kryteria. Spróbuj innych słów.[/bright_red]\n")
             continue
             
         display_mods(mods)
@@ -178,6 +200,7 @@ def main():
                 confirm = console.input(f"Czy na pewno chcesz zainstalować [bold]{selected_mod['name']}[/bold]? (t/n): ").strip().lower()
                 if confirm in ['t', 'tak', 'y', 'yes']:
                     download_and_install_mod(selected_mod)
+                    console.print("[bold green]✅ Instalacja zakończona sukcesem! Zrestartuj PyCMD, aby zastosować zmiany.[/bold green]")
                 else:
                     console.print("Anulowano instalację.")
             else:

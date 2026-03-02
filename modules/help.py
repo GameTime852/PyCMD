@@ -12,3 +12,4 @@ def help(page=1):
         print("  pwd   - Wyświetla bieżący katalog")
         print("  update - Sprawdza aktualizacje PyCMD")
         print("  getmods - Otwiera ekran pobierania modów")
+        print("  reset  - Uruchamia ponownie PyCMD")

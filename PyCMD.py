@@ -13,9 +13,17 @@ from pathlib import Path
 # import modules.load_exit2 as load_exit2
 # import modules.celebration as celebration
 
-from modules import getmods, help, info, Start, load_exit2, celebration, updater 
+from modules import getmods, help, info, Start, load_exit2, celebration, updater, reset
 
-
+def stop():
+    logging.info("Zamykanie...")
+    clear()
+    load_exit2.load_exit()
+    try:
+        with open('config.txt', 'w', encoding='utf-8') as f:
+            f.writelines(["started = false\n"] + lines[1:])
+    except: pass
+    exit()
 # first_file = Path("first")
 # if first_file.exists() and first_file.is_file():
 #     celebration.celebrate()
@@ -164,7 +172,6 @@ if not started == "started = true\n":
     Start.start()
     with open('config.txt', 'w', encoding='utf-8') as f:
         f.writelines(["started = true\n"] + lines[1:])
-        if len(lines) > 1: f.writelines(lines[1:])
 
 
 # --- PĘTLA GŁÓWNA ---
@@ -239,14 +246,7 @@ while True:
 
     # 3. WBUDOWANE
     elif command_lower == "exit":
-        logging.info("Zamykanie...")
-        clear()
-        load_exit2.load_exit()
-        try:
-            with open('config.txt', 'w', encoding='utf-8') as f:
-                f.writelines(["started = false\n"] + lines[1:])
-        except: pass
-        exit()
+        stop()
 
     elif command_lower == "help":
         val = input("Podaj numer strony (1): ")
@@ -293,6 +293,21 @@ while True:
         updater.main()
     elif command.strip() == "getmods":
         getmods.main()
+    elif command_lower == "reset":
+        
+        os.system('cls')
+
+        reset.main()
+        
+        try:
+            os.system("cd C:\\py")
+            os.system("py PyCMD.py")
+            exit()
+            
+        except Exception as e:
+            print(f"Błąd podczas resetowania: {e}")
+
+
     else:
         if command.strip():
             print(f"Nieznane polecenie: {command}")

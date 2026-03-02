@@ -54,3 +54,9 @@
 
 * Added command for downloading mods
 * Updated help screen
+
+#### **Version 1.4:**
+
+* Added command for reset PyCMD
+* Updated help screen
+* Fixed some bugs in PyCMD and getmods
