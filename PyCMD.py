@@ -125,7 +125,7 @@ def load_mods():
                         mod.register(mod_commands)
                         logging.info(f"ZAŁADOWANO: {item.name}")
                     else:
-                        logging.warning(f"POMINIĘTO: {item.name} (brak register)")
+                        logging.warning(f"ZAŁADOWANO TYLKO STARTUP: {item.name} (brak register)")
                 except Exception as e:
                     logging.error(f"BŁĄD KRYTYCZNY w {item.name}: {e}")
                     
@@ -156,8 +156,10 @@ if not file_path.exists():
     file_path.touch()
 
 os.system("cls")
-load_mods() 
 info.info()
+print("")
+load_mods() 
+
 
 with open('config.txt', 'r', encoding='utf-8') as f:
     lines = f.readlines()
@@ -177,7 +179,7 @@ if not started == "started = true\n":
 # --- PĘTLA GŁÓWNA ---
 
 while True: 
-    print("\n")
+    print("")
     current_directory = os.getcwd()
     try:
         command = input(prefix + " " + current_directory + "> ")
