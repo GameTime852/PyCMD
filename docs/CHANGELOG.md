@@ -60,3 +60,8 @@
 * Added command for reset PyCMD
 * Updated help screen
 * Fixed some bugs in PyCMD and getmods
+
+#### **Version 1.4.1:**
+
+* Added support for only startup mods
+* Fixed some bugs
