@@ -1,3 +1,0 @@
-[21:23:00] INFO: --- START SYSTEMU ---
-[21:23:00] INFO: ZAŁADOWANO: dev_tools
-[21:23:00] INFO: ZAŁADOWANO: nano
