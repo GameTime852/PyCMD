@@ -65,3 +65,8 @@
 
 * Added support for only startup mods
 * Fixed some bugs
+
+#### **Version 1.4.2**
+
+* Change updater location to main folder, so now you can start it from file
+* From now updater is not deleting your mods

@@ -2,3 +2,4 @@ mods/*
 !mods/.gitkeep
 temp/
 .tmp.driveupload/
+__pycache__/

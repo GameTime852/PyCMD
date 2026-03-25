@@ -13,7 +13,8 @@ from pathlib import Path
 # import modules.load_exit2 as load_exit2
 # import modules.celebration as celebration
 
-from modules import getmods, help, info, Start, load_exit2, celebration, updater, reset
+import updater
+from modules import getmods, help, info, Start, load_exit2, celebration, reset
 
 def stop():
     logging.info("Zamykanie...")
@@ -309,7 +310,9 @@ while True:
         except Exception as e:
             print(f"Błąd podczas resetowania: {e}")
 
-
+    elif command_lower == "github":
+        print("Odwiedź moją stronę na GitHub: https://github.com/gametime852")
+        print("Lub przejdź bezpośrednio do repozytorium: https://github.com/gametime852/pycmd")
     else:
         if command.strip():
             print(f"Nieznane polecenie: {command}")

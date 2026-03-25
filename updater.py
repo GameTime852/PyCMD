@@ -105,7 +105,12 @@ def download_and_update():
                     extracted_root = os.path.join(temp_dir, os.listdir(temp_dir)[0])
                 
                 # Kopiowanie plików, nadpisywanie obecnych
+# Kopiowanie plików, nadpisywanie obecnych
                 for item in os.listdir(extracted_root):
+                    # Pomijaj folder "mods", aby nie usunąć zainstalowanych modyfikacji
+                    if item.lower() == "mods":
+                        continue
+                        
                     source = os.path.join(extracted_root, item)
                     destination = os.path.join(os.getcwd(), item)
                     
@@ -130,7 +135,7 @@ def main():
         remote_v = get_remote_version()
     
     console.print(f"Obecna wersja: [cyan]{local_v}[/cyan]")
-    console.print(f"Najnowsza stabilna dostępna wersja: [cyan]{remote_v}[/cyan]\n")
+    console.print(f"Najnowsza dostępna wersja: [cyan]{remote_v}[/cyan]\n")
     
     if remote_v == "0.0.0":
         console.print("[red]Nie udało się pobrać informacji o nowej wersji.[/red]")
@@ -139,7 +144,8 @@ def main():
 
     if parse_version(remote_v) != parse_version(local_v):
         console.print("[bold green]Dostępna jest nowa aktualizacja![/bold green]")
-        choice = console.input("Czy chcesz pobrać i zainstalować aktualizację teraz? (T/N): ").strip().lower()
+        console.print(f"[bold #FF8C00]UWAGA! Możesz stracić takie dane jak custom prefix. [/bold #FF8C00]")
+        choice = console.input("Czy chcesz pobrać i zainstalować aktualizację teraz? ([#00FF00]T[/#00FF00]/[#FF0000]N[/#FF0000]): ").strip().lower()
         
         if choice in ['t', 'y', 'tak', 'yes']:
             success = download_and_update()
