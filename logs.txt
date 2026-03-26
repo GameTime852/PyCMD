@@ -1,0 +1,4 @@
+[09:30:21] INFO: --- START SYSTEMU ---
+[09:30:21] INFO: ZAŁADOWANO: dev_tools
+[09:30:23] INFO: CMD: mods
+[09:31:01] INFO: CMD: mods

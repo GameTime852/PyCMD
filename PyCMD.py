@@ -6,6 +6,7 @@ import logging
 import json  # <--- Konieczne do zapisu configu modów
 import atexit
 from pathlib import Path
+import shutil
 
 # import modules.help as help
 # import modules.info as info
@@ -202,7 +203,7 @@ while True:
 
     # 2. ZARZĄDZANIE MODAMI (STYL CD/LS)
     elif command_lower == "mods":
-        action = input("Opcja (list/enable/disable): ").strip().lower()
+        action = input("Opcja (list/enable/disable/uninstall): ").strip().lower()
         disabled_mods = load_disabled_mods()
         
         if action == "list":
@@ -243,9 +244,34 @@ while True:
                 disabled_mods.remove(target_mod)
                 save_disabled_mods(disabled_mods)
                 print(f"Włączono moda '{target_mod}'. Zrestartuj PyCMD, aby zastosować zmiany.")
-        
+        elif action == "uninstall":
+            target_mod = input("Nazwa moda do odinstalowania: ").strip()
+            if not check_mod_exists(target_mod):
+                print(f"Błąd: Mod '{target_mod}' nie istnieje.")
+            else:
+                # Próba usunięcia folderu moda
+                mod_folder = Path('mods') / target_mod
+                mod_file = Path('mods') / f"{target_mod}.py"
+                try:
+                    if mod_folder.is_dir():
+                        
+                        shutil.rmtree(mod_folder)
+                        print(f"Mod '{target_mod}' został odinstalowany.")
+                    elif mod_file.is_file():
+                        mod_file.unlink()
+                        print(f"Mod '{target_mod}' został odinstalowany.")
+                    else:
+                        print(f"Nie można znaleźć plików moda '{target_mod}' do usunięcia.")
+                    
+                    # Usunięcie z listy wyłączonych, jeśli tam był
+                    disabled_mods = load_disabled_mods()
+                    if target_mod in disabled_mods:
+                        disabled_mods.remove(target_mod)
+                        save_disabled_mods(disabled_mods)
+                except Exception as e:
+                    print(f"Błąd podczas odinstalowywania moda '{target_mod}': {e}")
         else:
-            print("Nieznana opcja. Dostępne: list, enable, disable")
+            print("Nieznana opcja. Dostępne: list, enable, disable, uninstall.")
 
     # 3. WBUDOWANE
     elif command_lower == "exit":
