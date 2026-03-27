@@ -77,3 +77,7 @@
 * Added admin system
 * Changed way which You use to install mods
 * Fixed some bugs
+
+#### **Version 2.0.1:**
+
+* Fixed security bug

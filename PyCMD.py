@@ -346,7 +346,6 @@ while True:
         print("Odwiedź moją stronę na GitHub: https://github.com/gametime852")
         print("Lub przejdź bezpośrednio do repozytorium: https://github.com/gametime852/pycmd")
     elif command_lower == "admin":
-        print (admin_login, admin_haslo)
         login = input("Login: ")
         haslo = input("Hasło: ")
         if login == admin_login and haslo == admin_haslo:
