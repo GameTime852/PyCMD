@@ -26,21 +26,6 @@ BRANCH = "main"
 CONFIG_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/{BRANCH}/config.txt"
 ZIP_URL = f"https://github.com/{GITHUB_USER}/{GITHUB_REPO}/archive/refs/heads/{BRANCH}.zip"
 
-def get_local_version() -> str:
-    """Odczytuje lokalną wersję z pliku config.txt."""
-    config_path = Path('config.txt')
-    if not config_path.exists():
-        return "0.0.0"
-    
-    try:
-        with open(config_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                if line.startswith("version ="):
-                    return line.split('=')[1].strip()
-    except Exception as e:
-        console.print(f"[red]Błąd podczas czytania lokalnego config.txt: {e}[/red]")
-    return "0.0.0"
-
 def get_remote_version() -> str:
     """Pobiera najnowszą wersję z serwera GitHub."""
     try:
@@ -56,13 +41,6 @@ def get_remote_version() -> str:
         console.print(f"[red]Nieoczekiwany błąd: {e}[/red]")
     
     return "0.0.0"
-
-def parse_version(v_str: str) -> tuple:
-    """Konwertuje ciąg znaków wersji (np. 1.1.1) na tuple do porównania."""
-    try:
-        return tuple(map(int, v_str.split('.')))
-    except ValueError:
-        return (0, 0, 0)
 
 def download_and_update():
     """Pobiera i instaluje aktualizację."""
@@ -117,7 +95,7 @@ def download_and_update():
                     if os.path.isdir(source):
                         shutil.copytree(source, destination, dirs_exist_ok=True)
                     else:
-                        shutil.copy2(source, destination)   
+                        shutil.copy2(source, destination)
             
             progress.update(task2, completed=True)
             return True
@@ -128,34 +106,31 @@ def download_and_update():
 
 def main():
     console.clear()
-    console.print("[bold bright_yellow]--- PyCMD Updater ---[/bold bright_yellow]\n")
+    console.print("[bold bright_yellow]--- PyCMD Reseting ---[/bold bright_yellow]\n")
     
     with console.status("Sprawdzanie aktualizacji...", spinner="dots"):
-        local_v = get_local_version()
         remote_v = get_remote_version()
-    
-    console.print(f"Obecna wersja: [cyan]{local_v}[/cyan]")
-    console.print(f"Najnowsza dostępna wersja: [cyan]{remote_v}[/cyan]\n")
+
+    console.print(f"Wersja do której zostanie zresetowane PyCMD: [cyan]{remote_v}[/cyan]\n")
     
     if remote_v == "0.0.0":
         console.print("[red]Nie udało się pobrać informacji o nowej wersji.[/red]")
         input("\nNaciśnij Enter, aby wyjść...")
         return
-
-    if parse_version(remote_v) != parse_version(local_v):
-        console.print("[bold green]Dostępna jest nowa aktualizacja![/bold green]")
-        console.print(f"[bold #FF8C00]UWAGA! Możesz stracić takie dane jak custom prefix. [/bold #FF8C00]")
-        choice = console.input("Czy chcesz pobrać i zainstalować aktualizację teraz? ([#00FF00]T[/#00FF00]/[#FF0000]N[/#FF0000]): ").strip().lower()
+#ff0000
+    if remote_v:
+        console.print(f"[bold #e33325]UWAGA! Stracisz wszystkie dane PyCMD. [/bold #FF8C00]")
+        choice = console.input("Czy chcesz zresetartować PyCMD teraz? ([#00FF00]T[/#00FF00]/[#FF0000]N[/#FF0000]): ").strip().lower()
         
         if choice in ['t', 'y', 'tak', 'yes']:
             success = download_and_update()
             if success:
-                console.print("\n[bold green]✅ Aktualizacja zakończona pomyślnie![/bold green]")
+                console.print("\n[bold green]✅ Resetowanie zakończone pomyślnie![/bold green]")
                 console.print("[yellow]Uruchom ponownie PyCMD, aby zastosować zmiany.[/yellow]")
             else:
-                console.print("\n[bold red]❌ Aktualizacja nie powiodła się.[/bold red]")
+                console.print("\n[bold red]❌ Resetowanie nie powiodło się.[/bold red]")
         else:
-            console.print("Anulowano aktualizację.")
+            console.print("Anulowano resetowanie.")
     else:
         console.print("[green]Posiadasz najnowszą wersję PyCMD.[/green]")
         

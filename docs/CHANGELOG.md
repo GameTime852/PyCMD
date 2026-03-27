@@ -70,3 +70,10 @@
 
 * Change updater location to main folder, so now you can start it from file
 * From now updater is not deleting your mods
+
+#### **Version 2.0:**
+
+* Added fabric settings
+* Added admin system
+* Changed way which You use to install mods
+* Fixed some bugs

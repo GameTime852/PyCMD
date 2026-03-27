@@ -1,3 +1,5 @@
 started = true
-version = 1.4.2
+version = 2.0
 prefix = PyCMD
+admin_login = admin
+admin_haslo = admin

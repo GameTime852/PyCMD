@@ -169,7 +169,7 @@ def download_and_install_mod(mod_data: dict):
 
 def main():
     console.clear()
-    console.print("[bold bright_green]--- PyCMD Mod Manager ---[/bold bright_green]")
+    console.print("[bold bright_green]--- PyCMD Mod Installer ---[/bold bright_green]")
     console.print("Tutaj możesz wyszukiwać i instalować modyfikacje stworzone przez społeczność.\n")
     
     while True:

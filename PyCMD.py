@@ -15,7 +15,9 @@ import shutil
 # import modules.celebration as celebration
 
 import updater
-from modules import getmods, help, info, Start, load_exit2, celebration, reset
+from modules import getmods, help, info, Start, load_exit2, reset, first
+
+admin = False
 
 def stop():
     logging.info("Zamykanie...")
@@ -26,10 +28,11 @@ def stop():
             f.writelines(["started = false\n"] + lines[1:])
     except: pass
     exit()
-# first_file = Path("first")
-# if first_file.exists() and first_file.is_file():
-#     celebration.celebrate()
-#     first_file.unlink(missing_ok=True)
+first_file = Path("first")
+if first_file.exists() and first_file.is_file():
+    first.main()
+    logging.info("First Start!")
+    first_file.unlink(missing_ok=True)
 
 
 # --- KONFIGURACJA LOGÓW ---
@@ -171,6 +174,8 @@ with open('config.txt', 'r', encoding='utf-8') as f:
     ignore = lines[1]
     prefix_line = lines[2]
     prefix = prefix_line.split("prefix = ")[-1].strip()
+    admin_login = lines[3].split("admin_login = ")[-1].strip()
+    admin_haslo = lines[4].split("admin_haslo = ")[-1].strip()
 
 if not started == "started = true\n":
     Start.start()
@@ -203,7 +208,10 @@ while True:
 
     # 2. ZARZĄDZANIE MODAMI (STYL CD/LS)
     elif command_lower == "mods":
-        action = input("Opcja (list/enable/disable/uninstall): ").strip().lower()
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
+        action = input("Opcja (list/enable/disable/uninstall/install/exit): ").strip().lower()
         disabled_mods = load_disabled_mods()
         
         if action == "list":
@@ -244,34 +252,25 @@ while True:
                 disabled_mods.remove(target_mod)
                 save_disabled_mods(disabled_mods)
                 print(f"Włączono moda '{target_mod}'. Zrestartuj PyCMD, aby zastosować zmiany.")
+        elif action == "install":
+            getmods.main()
         elif action == "uninstall":
             target_mod = input("Nazwa moda do odinstalowania: ").strip()
-            if not check_mod_exists(target_mod):
-                print(f"Błąd: Mod '{target_mod}' nie istnieje.")
-            else:
-                # Próba usunięcia folderu moda
-                mod_folder = Path('mods') / target_mod
-                mod_file = Path('mods') / f"{target_mod}.py"
-                try:
-                    if mod_folder.is_dir():
-                        
-                        shutil.rmtree(mod_folder)
-                        print(f"Mod '{target_mod}' został odinstalowany.")
-                    elif mod_file.is_file():
-                        mod_file.unlink()
-                        print(f"Mod '{target_mod}' został odinstalowany.")
-                    else:
-                        print(f"Nie można znaleźć plików moda '{target_mod}' do usunięcia.")
-                    
-                    # Usunięcie z listy wyłączonych, jeśli tam był
-                    disabled_mods = load_disabled_mods()
-                    if target_mod in disabled_mods:
-                        disabled_mods.remove(target_mod)
-                        save_disabled_mods(disabled_mods)
-                except Exception as e:
-                    print(f"Błąd podczas odinstalowywania moda '{target_mod}': {e}")
+            mod_path = Path('mods') / target_mod
+            try:
+                if mod_path.is_dir():
+                    shutil.rmtree(mod_path)
+                    print(f"Odinstalowano folder moda '{target_mod}'.")
+                elif (Path('mods') / f"{target_mod}.py").is_file():
+                    print(f"Wybrany mod ({target_mod}) jest plikiem .py. Usuwanie pojedynczego pliku nie jest obsługiwane przez ten system. Usuń ręcznie: {Path('mods') / f'{target_mod}.py'}")
+                else:
+                    print(f"Nie znaleziono moda o nazwie '{target_mod}'.")
+            except Exception as e:
+                print(f"Błąd podczas odinstalowywania moda '{target_mod}': {e}")
+        elif action == "exit":
+            continue
         else:
-            print("Nieznana opcja. Dostępne: list, enable, disable, uninstall.")
+            print("Nieznana opcja. Dostępne: list, enable, disable, uninstall, install, exit.")
 
     # 3. WBUDOWANE
     elif command_lower == "exit":
@@ -309,6 +308,9 @@ while True:
         print(current_directory)
 
     elif command_lower == "status":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
         stat = input("Status (on/off): ")
         try:
             with open('config.txt', 'w', encoding='utf-8') as f:
@@ -317,11 +319,15 @@ while True:
             print(f"Status: {stat}")
         except Exception: pass
     elif command.strip() == "config":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
         os.system("notepad config.txt")
     elif command.strip() == "update":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
         updater.main()
-    elif command.strip() == "getmods":
-        getmods.main()
     elif command_lower == "reset":
         
         os.system('cls')
@@ -339,6 +345,23 @@ while True:
     elif command_lower == "github":
         print("Odwiedź moją stronę na GitHub: https://github.com/gametime852")
         print("Lub przejdź bezpośrednio do repozytorium: https://github.com/gametime852/pycmd")
+    elif command_lower == "admin":
+        print (admin_login, admin_haslo)
+        login = input("Login: ")
+        haslo = input("Hasło: ")
+        if login == admin_login and haslo == admin_haslo:
+            clear()
+            print("Zalogowano jako administrator!")
+            print("Dostępne polecenia administratora: config, status, update, mods, fabric")
+            admin = True
+        else:
+            print("Nieprawidłowy login lub hasło.")
+    elif command_lower == "fabric":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
+        from modules import fabric
+        fabric.main()
     else:
         if command.strip():
             print(f"Nieznane polecenie: {command}")
