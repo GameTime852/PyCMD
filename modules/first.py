@@ -19,7 +19,7 @@ def main():
     ))
 
     # Pobieranie danych od użytkownika
-    admin_login = Prompt.ask("[cyan]Ustal login administratora[/cyan]", default="admin")
+    admin_login = Prompt.ask("[cyan]Ustal login administratora[/cyan]")
     admin_password = Prompt.ask("[cyan]Ustal hasło administratora[/cyan]", password=True)
     
     # Ścieżka do pliku config.txt w folderze nadrzędnym

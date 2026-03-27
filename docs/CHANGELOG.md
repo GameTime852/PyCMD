@@ -90,3 +90,7 @@
 
 * Fixed fabric bugs
 * Added way to log out from admin account
+
+#### **Version 2.0.4:**
+
+* Fixed first app bugs
