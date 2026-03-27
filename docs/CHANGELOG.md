@@ -94,3 +94,7 @@
 #### **Version 2.0.4:**
 
 * Fixed first app bugs
+
+#### **Version 2.0.5:**
+
+* Fixed style for admin mode

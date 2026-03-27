@@ -7,6 +7,12 @@ import json  # <--- Konieczne do zapisu configu modów
 import atexit
 from pathlib import Path
 import shutil
+import rich.console as console
+from rich.prompt import Prompt
+from rich.text import Text
+
+console = console.Console()
+
 
 # import modules.help as help
 # import modules.info as info
@@ -182,14 +188,19 @@ if not started == "started = true\n":
     with open('config.txt', 'w', encoding='utf-8') as f:
         f.writelines(["started = true\n"] + lines[1:])
 
-
+class cmd(Prompt):
+    prompt_suffix = Text.from_markup("[bold #ff9221]> [/]")  # Tutaj wpisujesz co chcesz zamiast dwukropka
+    
 # --- PĘTLA GŁÓWNA ---
 
 while True: 
     print("")
     current_directory = os.getcwd()
     try:
-        command = input(prefix + " " + current_directory + "> ")
+        if admin:
+            command = cmd.ask(f"[bold #ff9221]ADMIN[/bold #ff9221][bold] {prefix} {current_directory}[/bold]")
+        else:
+            command = input(f"{prefix} {current_directory}> ")
     except EOFError:
         break
         

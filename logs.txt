@@ -1,0 +1,5 @@
+[19:58:17] INFO: --- START SYSTEMU ---
+[19:58:17] INFO: ZAŁADOWANO: dev_tools
+[19:58:17] INFO: ZAŁADOWANO: nano
+[19:58:21] INFO: CMD: admin
+[19:58:27] INFO: CMD: admin
