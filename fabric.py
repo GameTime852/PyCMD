@@ -119,7 +119,7 @@ def main():
         return
 #ff0000
     if remote_v:
-        console.print(f"[bold #e33325]UWAGA! Stracisz wszystkie dane PyCMD. [/bold #FF8C00]")
+        console.print(f"[bold #e33325]UWAGA! Stracisz wszystkie dane PyCMD. [/bold #e33325]")
         choice = console.input("Czy chcesz zresetartować PyCMD teraz? ([#00FF00]T[/#00FF00]/[#FF0000]N[/#FF0000]): ").strip().lower()
         
         if choice in ['t', 'y', 'tak', 'yes']:

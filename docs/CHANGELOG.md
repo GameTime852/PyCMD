@@ -85,3 +85,8 @@
 #### **Version 2.0.2:**
 
 * Fixed critical bug
+
+#### **Version 2.0.3:**
+
+* Fixed fabric bugs
+* Added way to log out from admin account

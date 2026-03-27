@@ -346,6 +346,13 @@ while True:
         print("Odwiedź moją stronę na GitHub: https://github.com/gametime852")
         print("Lub przejdź bezpośrednio do repozytorium: https://github.com/gametime852/pycmd")
     elif command_lower == "admin":
+        if admin:
+            print("Wylogowano z konta administratora.")
+            time.sleep(1)
+            admin = False
+            clear()
+            info.info()
+            continue
         login = input("Login: ")
         haslo = input("Hasło: ")
         if login == admin_login and haslo == admin_haslo:
