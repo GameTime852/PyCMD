@@ -117,7 +117,6 @@ def main():
         console.print("[red]Nie udało się pobrać informacji o nowej wersji.[/red]")
         input("\nNaciśnij Enter, aby wyjść...")
         return
-#ff0000
     if remote_v:
         console.print(f"[bold #e33325]UWAGA! Stracisz wszystkie dane PyCMD. [/bold #e33325]")
         choice = console.input("Czy chcesz zresetartować PyCMD teraz? ([#00FF00]T[/#00FF00]/[#FF0000]N[/#FF0000]): ").strip().lower()

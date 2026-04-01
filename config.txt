@@ -1,5 +1,5 @@
-started = true
-version = 2.0.5
+started = false
+version = 2.1
 prefix = PyCMD
 admin_login = 
 admin_haslo = 

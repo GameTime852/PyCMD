@@ -1,6 +1,7 @@
 def help(page=1):
 
     if page == 1:
+        print("\n")
         print(f"Strona {page}")
         print("Dostępne polecenia:")
         print("  help  - Wyświetla tę pomoc")
@@ -10,6 +11,21 @@ def help(page=1):
         print("  ls    - Wyświetla zawartość katalogu")
         print("  exit  - Zamyka PyCMD")
         print("  pwd   - Wyświetla bieżący katalog")
-        print("  update - Sprawdza aktualizacje PyCMD")
-        print("  getmods - Otwiera ekran pobierania modów")
+        print("  github  - Odwiedź moją stronę na GitHub")
         print("  reset  - Uruchamia ponownie PyCMD")
+        print("  admin   - Przełącza tryb administratora (komendy na stronie 2)")
+    elif page == 2:
+        print("\n")
+        print(f"Strona {page}")
+        print("Dostępne polecenia administratora (wymaga wejścia na tryb admina):")
+        print("  config - Edytuje plik konfiguracyjny")
+        print("  status - Zmienia status PyCMD (on/off)")
+        print("  update - Aktualizuje PyCMD")
+        print("  mods   - Zarządza modami")
+        print("  fabric - Resetowanie PyCMD")
+        print("  cmd    - Wykonuje polecenie systemowe")
+        print("  adm_cmds - Wyświetla tę listę")
+        print("  changepass - Zmienia hasło administratora")
+        print("  changeprefix - Zmienia prefix PyCMD")
+    else:
+        print("Nieznana strona.")

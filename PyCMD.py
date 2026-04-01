@@ -14,12 +14,6 @@ from rich.text import Text
 console = console.Console()
 
 
-# import modules.help as help
-# import modules.info as info
-# import modules.Start as Start
-# import modules.load_exit2 as load_exit2
-# import modules.celebration as celebration
-
 import updater
 from modules import getmods, help, info, Start, load_exit2, reset, first
 
@@ -182,6 +176,43 @@ with open('config.txt', 'r', encoding='utf-8') as f:
     prefix = prefix_line.split("prefix = ")[-1].strip()
     admin_login = lines[3].split("admin_login = ")[-1].strip()
     admin_haslo = lines[4].split("admin_haslo = ")[-1].strip()
+
+def zmien_dane():
+    global admin_login, admin_haslo, lines, admin
+    new_login = input("Ustaw login administratora (Enter dla pozostawienia): ").strip()
+    new_password = input("Ustaw hasło administratora (Enter dla pozostawienia): ").strip()
+    if new_login:
+        admin_login = new_login
+    if new_password:
+        admin_haslo = new_password
+    
+    new_lines = [started, ignore, f"prefix = {prefix}\n", f"admin_login = {admin_login}\n", f"admin_haslo = {admin_haslo}\n"]
+    if len(lines) > 5:
+        new_lines.extend(lines[5:])
+    
+    with open('config.txt', 'w', encoding='utf-8') as f:
+        f.writelines(new_lines)
+    lines = new_lines
+
+    clear()
+    info.info()
+    admin = False
+
+def zmien_prefix():
+    global prefix, lines
+    new_prefix = input("Ustaw prefix (Enter dla pozostawienia): ").strip()
+    if new_prefix:
+        prefix = new_prefix
+    
+    new_lines = [started, ignore, f"prefix = {prefix}\n", f"admin_login = {admin_login}\n", f"admin_haslo = {admin_haslo}\n"]
+    if len(lines) > 5:
+        new_lines.extend(lines[5:])
+        
+    with open('config.txt', 'w', encoding='utf-8') as f:
+        f.writelines(new_lines)
+    lines = new_lines
+
+
 
 if not started == "started = true\n":
     Start.start()
@@ -356,6 +387,27 @@ while True:
     elif command_lower == "github":
         print("Odwiedź moją stronę na GitHub: https://github.com/gametime852")
         print("Lub przejdź bezpośrednio do repozytorium: https://github.com/gametime852/pycmd")
+    elif command_lower == "cmd":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
+        adm_command = input("Polecenie systemowe do wykonania: ")
+        try:
+            os.system(adm_command)
+        except Exception as e:
+            print(f"Błąd podczas wykonywania polecenia: {e}")
+    elif command_lower == "adm_cmds":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
+        print("Dostępne polecenia systemowe:")
+        print(" - config: Edytuje plik konfiguracyjny")
+        print(" - status: Zmienia status PyCMD (on/off)")
+        print(" - update: Aktualizuje PyCMD")
+        print(" - mods: Zarządza modami")
+        print(" - fabric: Resetowanie PyCMD")
+        print(" - cmd: Wykonuje polecenie systemowe")
+        print(" - adm_cmds: Wyświetla tę listę")
     elif command_lower == "admin":
         if admin:
             print("Wylogowano z konta administratora.")
@@ -369,10 +421,20 @@ while True:
         if login == admin_login and haslo == admin_haslo:
             clear()
             print("Zalogowano jako administrator!")
-            print("Dostępne polecenia administratora: config, status, update, mods, fabric")
+            print("Dostępne polecenia administratora: config, status, update, mods, fabric, cmd, adm_cmds")
             admin = True
         else:
             print("Nieprawidłowy login lub hasło.")
+    elif command_lower == "changepass":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
+        zmien_dane()
+    elif command_lower == "changeprefix":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
+        zmien_prefix()
     elif command_lower == "fabric":
         if not admin:
             print("Nie masz uprawnień administratora.")
