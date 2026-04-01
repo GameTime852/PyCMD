@@ -421,7 +421,7 @@ while True:
         if login == admin_login and haslo == admin_haslo:
             clear()
             print("Zalogowano jako administrator!")
-            print("Dostępne polecenia administratora: config, status, update, mods, fabric, cmd, adm_cmds")
+            print("Dostępne polecenia administratora: help na stronie nr. 2")
             admin = True
         else:
             print("Nieprawidłowy login lub hasło.")

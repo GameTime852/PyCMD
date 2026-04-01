@@ -145,3 +145,9 @@
 
 * PLANS:
     * Repair mods uninstall system
+
+
+#### **Version 2.1.1:**
+
+
+* Fixed some text problems
