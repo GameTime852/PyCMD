@@ -12,6 +12,8 @@ from rich.prompt import Prompt
 from rich.text import Text
 import stdiomask
 import traceback
+import hashlib
+import requests
 
 
 console = console.Console()
@@ -21,6 +23,7 @@ import updater
 from modules import getmods, help, info, Start, load_exit2, reset, first, crit_repair, crit_reset
 
 admin = False
+root = False
 
 def stop():
     logging.info("Zamykanie...")
@@ -282,17 +285,21 @@ if not started == "started = true\n":
     with open('config.txt', 'w', encoding='utf-8') as f:
         f.writelines(["started = true\n"] + lines[1:])
 
-class cmd(Prompt):
+class adm(Prompt):
     prompt_suffix = Text.from_markup("[bold #ff9221]> [/]")  # Tutaj wpisujesz co chcesz zamiast dwukropka
-    
+
+class root_cmd(Prompt):
+    prompt_suffix = Text.from_markup("[bold #00FFEA]> [/]")  # Tutaj wpisujesz co chcesz zamiast dwukropka
 # --- PĘTLA GŁÓWNA ---
 
 while True: 
     print("")
     current_directory = os.getcwd()
     try:
-        if admin:
-            command = cmd.ask(f"[bold #ff9221]ADMIN[/bold #ff9221][bold] {prefix} {current_directory}[/bold]")
+        if admin and not root:
+            command = adm.ask(f"[bold #ff9221]ADMIN[/bold #ff9221][bold] {prefix} {current_directory}[/bold]")
+        elif root:
+            command = root_cmd.ask(f"[bold #00FFEA]ROOT[/bold #00FFEA][bold] {prefix} {current_directory}[/bold]")
         else:
             command = input(f"{prefix} {current_directory}> ")
     except EOFError:
@@ -479,6 +486,9 @@ while True:
             continue
         os.system("pycmd")
     elif command_lower == "admin":
+        if root:
+            print("Jesteś zalogowany jako Root. Nie możesz przełączać się na konto administratora.")
+            continue
         if admin:
             print("Wylogowano z konta administratora.")
             time.sleep(1)
@@ -516,6 +526,71 @@ while True:
             print("Nie masz uprawnień administratora.")
             continue
         raise TestCrash()
+    elif command.strip() == "root":
+        
+        if root:
+            print("Wylogowano z konta root.")
+            time.sleep(1)
+            root = False
+            admin = False
+            clear()
+            info.info()
+            continue
+        # Zamiast hasha, podajemy publiczny link do odczytu z Twojej bazy Firebase
+        FIREBASE_URL = "https://pycmd-e8afa-default-rtdb.europe-west1.firebasedatabase.app/root.json"
+
+        class BladUprawnien(Exception):
+            def __init__(self, wiadomosc="Odmowa dostępu! Błędny kod uprawnień root."):
+                self.message = wiadomosc
+                super().__init__(self.message)
+
+        def pobierz_aktualny_hash():
+            try:
+                response = requests.get(FIREBASE_URL, timeout=5)
+                
+                response.raise_for_status() 
+                dane = response.json()
+                
+                # Jeśli dane to None (baza jest pusta), zapobiegnie to błędom
+                if not dane:
+                    return None
+                    
+                return dane.get("code")
+                
+            except Exception as e:
+                print(f"Szczegóły błędu połączenia: {e}")
+                return None
+
+        def sprawdz_uprawnienia_root(wprowadzony_kod: str):
+            zapisany_hash = pobierz_aktualny_hash()
+            
+            if not zapisany_hash:
+                raise BladUprawnien("Serwer autoryzacji jest niedostępny.")
+
+            wprowadzony_hash = hashlib.sha256(wprowadzony_kod.encode()).hexdigest()
+            
+            if wprowadzony_hash != zapisany_hash:
+                raise BladUprawnien()
+            
+            return True
+
+        # --- UŻYCIE ---
+        try:
+            with console.status("Łączenie z serwerem...",spinner="dots", spinner_style="white"):
+                # Tutaj umieść swój kod, który zajmuje czas
+                time.sleep(1)
+            kod_od_uzytkownika = stdiomask.getpass("Podaj kod autoryzacji root: ")
+            
+            sprawdz_uprawnienia_root(kod_od_uzytkownika)
+            
+            clear()
+            admin = True
+            root = True
+
+            print("Zalogowano jako Root!")
+
+        except BladUprawnien as e:
+            print(f"BŁĄD: {e}")
     else:
         if command.strip():
             print(f"Nieznane polecenie: {command}")
