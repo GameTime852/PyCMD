@@ -11,13 +11,14 @@ import rich.console as console
 from rich.prompt import Prompt
 from rich.text import Text
 import stdiomask
+import traceback
 
 
 console = console.Console()
 
 
 import updater
-from modules import getmods, help, info, Start, load_exit2, reset, first
+from modules import getmods, help, info, Start, load_exit2, reset, first, crit_repair, crit_reset
 
 admin = False
 
@@ -36,14 +37,20 @@ if first_file.exists() and first_file.is_file():
     logging.info("First Start!")
     first_file.unlink(missing_ok=True)
 
+class TestCrash(Exception):
+    def __init__(self, message="To jest testowy błąd krytyczny!"):
+        self.message = message
+        super().__init__(message)
+        
+
 
 # --- KONFIGURACJA LOGÓW ---
 logging.basicConfig(
     filename='logs.txt',
     level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s: %(message)s',
+    format='[%(asctime)s] [%(levelname)s] [%(module)s:%(funcName)s] %(message)s',
     datefmt='%H:%M:%S',
-    filemode='w',
+    filemode='a', # Zmiana z 'w' na 'a' (append), aby restart (Safe Critical) nie czyścił od razu logu błędu!
     encoding='utf-8'
 )
 
@@ -58,6 +65,60 @@ def clean_logs_on_exit():
         pass
 
 atexit.register(clean_logs_on_exit)
+
+# --- SYSTEM SAFE CRITICAL (GLOBAL EXCEPTION HANDLER) ---
+
+def safe_critical_handler(exc_type, exc_value, exc_tb):
+    """Przechwytuje krytyczne błędy, chroni przed crashami i restartuje system."""
+    
+    # 1. Dokładny zapis błędu do ukrytych logów
+    logging.critical("--- WYSTĄPIŁ BŁĄD KRYTYCZNY SYSTEMU (SAFE CRITICAL) ---")
+    error_details = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    logging.critical(f"\n{error_details}")
+    logging.critical("Wymuszanie trybu Safe Critical i restartu.")
+
+    # 2. Ładny komunikat "Blue Screen" dla użytkownika
+    from rich.panel import Panel
+    error_msg = (
+        "[bold red]System napotkał krytyczny błąd, którego nie mógł zignorować.[/bold red]\n\n"
+        f"[yellow]Typ błędu:[/] {exc_type.__name__}\n"
+        f"[yellow]Opis błędu:[/] {exc_value}\n\n"
+        "[cyan]Szczegółowy ślad błędu (Traceback) został bezpiecznie zapisany w logs.txt.[/cyan]\n"
+        "[bold white]Trwa zabezpieczanie danych i awaryjne ponowne uruchamianie...[/bold white]"
+    )
+    
+    console.print()
+    console.print(Panel(error_msg, title="[blink black on #00FFEA] FATAL ERROR [/blink black on #00FFEA]", border_style="#00FFEA"))
+
+    # 3. Zmiana flagi w config.txt na "critical"
+    try:
+        with open('config.txt', 'r', encoding='utf-8') as f:
+            c_lines = f.readlines()
+        
+        if c_lines:
+            c_lines[0] = "started = critical\n"
+            with open('config.txt', 'w', encoding='utf-8') as f:
+                f.writelines(c_lines)
+    except Exception as e:
+        logging.error(f"Nie udało się zmienić statusu na critical: {e}")
+
+    input("\nNaciśnij Enter, aby kontynuować do restartu...")
+    # 4. Automatyczny Auto-Reboot po 4 sekundach
+    os.system('cls')
+
+    crit_repair.main()
+    crit_reset.main()
+
+    try:
+        os.system("cd C:\\py")
+        os.system("py PyCMD.py")
+        exit()
+        
+    except Exception as e:
+        print(f"Błąd podczas resetowania: {e}")
+
+# Rejestracja naszego handlera w rdzeniu Pythona
+sys.excepthook = safe_critical_handler
 
 # --- SYSTEM MODÓW I KONFIGURACJA ---
 
@@ -450,6 +511,11 @@ while True:
             continue
         from modules import fabric
         fabric.main()
+    elif command_lower == "crash":
+        if not admin:
+            print("Nie masz uprawnień administratora.")
+            continue
+        raise TestCrash()
     else:
         if command.strip():
             print(f"Nieznane polecenie: {command}")

@@ -26,5 +26,6 @@ def help(page=1):
         print("  cmd    - Wykonuje polecenie systemowe")
         print("  changepass - Zmienia hasło administratora")
         print("  changeprefix - Zmienia prefix PyCMD")
+        print("  crash - Powoduje testowy błąd krytyczny")
     else:
         print("Nieznana strona.")

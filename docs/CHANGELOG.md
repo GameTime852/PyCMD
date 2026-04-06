@@ -165,3 +165,13 @@
 
 * Fixed some bugs with uninstall mods
 * Deleted adm_cmds command
+
+
+#### **Version 2.2:**
+
+
+* Added Safe Critical system
+* Added crash command
+* Better logs
+* Fixed some bugs
+* Updated PyCMD.bat
