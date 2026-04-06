@@ -10,6 +10,8 @@ import shutil
 import rich.console as console
 from rich.prompt import Prompt
 from rich.text import Text
+import stdiomask
+
 
 console = console.Console()
 
@@ -180,7 +182,7 @@ with open('config.txt', 'r', encoding='utf-8') as f:
 def zmien_dane():
     global admin_login, admin_haslo, lines, admin
     new_login = input("Ustaw login administratora (Enter dla pozostawienia): ").strip()
-    new_password = input("Ustaw hasło administratora (Enter dla pozostawienia): ").strip()
+    new_password = stdiomask.getpass("Ustaw hasło administratora (Enter dla pozostawienia): ").strip()
     if new_login:
         admin_login = new_login
     if new_password:
@@ -416,8 +418,8 @@ while True:
             clear()
             info.info()
             continue
-        login = input("Login: ")
-        haslo = input("Hasło: ")
+        login = Prompt.ask("Login")
+        haslo = stdiomask.getpass("Hasło: ")
         if login == admin_login and haslo == admin_haslo:
             clear()
             print("Zalogowano jako administrator!")

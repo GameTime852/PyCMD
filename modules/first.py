@@ -4,7 +4,8 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 from modules import load_first
- 
+import stdiomask
+
 console = Console()
  
 def main():
@@ -20,9 +21,10 @@ def main():
 
     # Pobieranie danych od użytkownika
     admin_login = Prompt.ask("[cyan]Ustal login administratora[/cyan]")
-    admin_password = Prompt.ask("[cyan]Ustal hasło administratora[/cyan]", password=True)
-    
-    # Ścieżka do pliku config.txt w folderze nadrzędnym
+    console.print("[cyan]Ustal hasło administratora[/cyan]: ", end="")
+    admin_password = stdiomask.getpass("")
+
+    # Ścieżka do pliku config.txt  folderze nadrzędnym
     config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.txt")
 
     try:

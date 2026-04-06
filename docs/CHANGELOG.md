@@ -151,3 +151,11 @@
 
 
 * Fixed some text problems
+
+
+#### **Version 2.1.2:**
+
+
+* Updated README.md
+* Added masked password
+
