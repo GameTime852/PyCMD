@@ -159,3 +159,9 @@
 * Updated README.md
 * Added masked password
 
+
+#### **Version 2.1.3:**
+
+
+* Fixed some bugs with uninstall mods
+* Deleted adm_cmds command

@@ -24,7 +24,6 @@ def help(page=1):
         print("  mods   - Zarządza modami")
         print("  fabric - Resetowanie PyCMD")
         print("  cmd    - Wykonuje polecenie systemowe")
-        print("  adm_cmds - Wyświetla tę listę")
         print("  changepass - Zmienia hasło administratora")
         print("  changeprefix - Zmienia prefix PyCMD")
     else:

@@ -301,9 +301,23 @@ while True:
         elif action == "uninstall":
             target_mod = input("Nazwa moda do odinstalowania: ").strip()
             mod_path = Path('mods') / target_mod
+            
+            # --- Funkcja pomocnicza usuwająca problem "WinError 5" ---
+            def usun_zablokowane(func, path, exc_info):
+                import stat
+                try:
+                    # Zdejmujemy atrybut 'tylko do odczytu' i próbujemy usunąć ponownie
+                    os.chmod(path, stat.S_IWRITE)
+                    func(path)
+                except Exception:
+                    # Jeśli Windows całkowicie blokuje plik (bo np. mod jest załadowany), 
+                    # ignorujemy ten konkretny plik, by nie wyrzucić błędu w konsoli
+                    pass 
+
             try:
                 if mod_path.is_dir():
-                    shutil.rmtree(mod_path)
+                    # Przekazujemy naszą funkcję naprawczą do 'onerror'
+                    shutil.rmtree(mod_path, onerror=usun_zablokowane)
                     print(f"Odinstalowano folder moda '{target_mod}'.")
                 elif (Path('mods') / f"{target_mod}.py").is_file():
                     print(f"Wybrany mod ({target_mod}) jest plikiem .py. Usuwanie pojedynczego pliku nie jest obsługiwane przez ten system. Usuń ręcznie: {Path('mods') / f'{target_mod}.py'}")
@@ -398,18 +412,11 @@ while True:
             os.system(adm_command)
         except Exception as e:
             print(f"Błąd podczas wykonywania polecenia: {e}")
-    elif command_lower == "adm_cmds":
+    elif command_lower == "pycmd":
         if not admin:
             print("Nie masz uprawnień administratora.")
             continue
-        print("Dostępne polecenia systemowe:")
-        print(" - config: Edytuje plik konfiguracyjny")
-        print(" - status: Zmienia status PyCMD (on/off)")
-        print(" - update: Aktualizuje PyCMD")
-        print(" - mods: Zarządza modami")
-        print(" - fabric: Resetowanie PyCMD")
-        print(" - cmd: Wykonuje polecenie systemowe")
-        print(" - adm_cmds: Wyświetla tę listę")
+        os.system("pycmd")
     elif command_lower == "admin":
         if admin:
             print("Wylogowano z konta administratora.")
