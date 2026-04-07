@@ -179,7 +179,14 @@
 
 #### **Version 2.3:**
 
+
 * Added root system
 
 * PLANS:
-    * Added commands for root system
+    * Add commands for root system
+
+
+#### **Version 2.3_1:**
+
+
+* Updated changelog
