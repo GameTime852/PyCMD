@@ -1,5 +1,5 @@
 started = false
-version = 3.0
+version = 3.1
 prefix = PyCMD
 admin_login =
 admin_pass =
